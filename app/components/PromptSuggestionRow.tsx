@@ -1,6 +1,10 @@
 import PromptSuggestionButton from "./PromptSuggestionButton";
 
-const PromptSuggestionRow = ({ onPromptClick }) => {
+interface PromptSuggestionRowProps {
+  onPromptClick: (text: string) => void;
+}
+
+const PromptSuggestionRow = ({ onPromptClick }: PromptSuggestionRowProps) => {
   const prompts = [
     "O'zbekiston qayerda joylashgan?",
     "O'zbekiston poytaxti qayer?",
@@ -11,10 +15,10 @@ const PromptSuggestionRow = ({ onPromptClick }) => {
   ];
 
   return (
-    <div className="prompt-suggestion-row">
+    <div className="flex flex-wrap gap-2 justify-center mt-6">
       {prompts.map((prompt, index) => (
         <PromptSuggestionButton
-          key={`suggestion-${index}`}
+          key={index}
           text={prompt}
           onClick={() => onPromptClick(prompt)}
         />

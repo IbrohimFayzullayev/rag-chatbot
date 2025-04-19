@@ -1,8 +1,9 @@
-import "./global.css";
+// import "./global.css";
+import "./index.css";
 
 export const metadata = {
-  title: "F1GPT",
-  description: " The place to go for all your Formula One questions!",
+  title: "UzGpt",
+  description: "Uzbekistan AI Assistant",
 };
 
 const RootLayout = ({ children }) => {
@@ -11,7 +12,7 @@ const RootLayout = ({ children }) => {
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>F1Gpt</title>
+        <title>UzGpt</title>
       </head>
       <body>{children}</body>
     </html>

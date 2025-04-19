@@ -3,7 +3,8 @@ import { OpenAI as OpenAIEmbeddings } from "openai";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 import { NextResponse } from "next/server";
 
-// .env dan o'qiladi
+export const runtime = "edge";
+
 const {
   OPENAI_API_KEY,
   ASTRA_DB_NAMESPACE,
@@ -18,11 +19,11 @@ new LangchainOpenAI({
 });
 
 // Embedding va Chat uchun OpenAI SDK
+
 const openai = new OpenAIEmbeddings({
   apiKey: OPENAI_API_KEY,
 });
 
-// Astra DB klienti
 const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN!);
 
 const db = client.db(ASTRA_DB_API_ENDPOINT!, {
@@ -32,7 +33,7 @@ const db = client.db(ASTRA_DB_API_ENDPOINT!, {
 export async function POST(req: Request) {
   try {
     const { messages } = await req.json();
-    const latestMessage = messages[messages?.length - 1]?.content;
+    const latestMessage = messages[messages.length - 1]?.content;
 
     let docContext = "";
 
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
       encoding_format: "float",
     });
 
-    // Astra DB dan mos keladigan hujjatlarni topish
+    // Astra DB'dan hujjatlarni olish
     try {
       const collection = db.collection(ASTRA_DB_COLLECTION!);
       const cursor = collection.find(null, {
@@ -54,57 +55,102 @@ export async function POST(req: Request) {
       });
 
       const documents = await cursor.toArray();
-      const docsMap = documents?.map((doc) => doc.text);
+      const docsMap = documents.map((doc) => doc.text);
       docContext = JSON.stringify(docsMap);
     } catch (error) {
       console.error("DB Error:", error);
-      docContext = "";
     }
 
-    // System promptni tayyorlash
     const systemPrompt = {
       role: "system",
       content: `
-        You are an AI assistant who knows everything about Formula One. Use the below context to augment what you know about Formula One racing. The context will provide you with the most recent page data from wikipedia, the official F1 website and others. If the context doesn't include the info you need, answer based on your existing knowledge and don't mention the source of your info or what the context does or doesn't include. Format responses using markdown where applicable and don't return images.
-
-        -----------------------
-        START CONTEXT
+        Siz sun'iy intellektga asoslangan yordamchisiz. Sizning asosiy vazifangiz —
+        foydalanuvchilarga O‘zbekiston haqida aniq va foydali ma’lumotlarni taqdim
+        etish. Quyidagi kontekstda berilgan ma’lumotlardan foydalanib javob bering.
+        Agar savolga kontekstda javob topilmasa, siz mavjud bilimlaringizga asoslanib
+        javob bera olasiz. Har doim javoblaringizni o‘zbek tilida yozing va iloji
+        boricha tushunarli, sodda, va aniq tarzda tushuntiring.
+        Hech qachon “kontekstda bu bor” yoki “kontekstda bu yo‘q” degan jumlalarni
+        ishlatmang. Javoblaringizda havolalar, manbalar yoki rasmga oid kontentni
+        keltirmang. Faqat matn ko‘rinishida izoh bering.
+    
+        ----------------------------------------
+        KONTEKSTDAGI MA’LUMOTLAR:
         ${docContext}
-        END CONTEXT
-        -----------------------
-        QUESTION: ${latestMessage}
-        -----------------------
+        ----------------------------------------
+        FOYDALANUVCHI SAVOLI:
+        ${latestMessage}
+        ----------------------------------------
       `,
     };
 
-    // Chat API orqali streaming javob olish
-    const response = await openai.chat.completions.create({
+    // OpenAI Chat javobini olish
+    // const openaiRes = await openai.chat.completions.create({
+    //   model: "gpt-4",
+    //   stream: true,
+    //   messages: [systemPrompt, ...messages],
+    // });
+    const reply = await openai.chat.completions.create({
       model: "gpt-4",
-      messages: [systemPrompt, ...messages],
       stream: true,
+      messages: [systemPrompt, ...messages],
     });
 
-    // Streaming bilan javobni yuborish
-    const encoder = new TextEncoder();
-    const stream = new ReadableStream({
-      async start(controller) {
-        for await (const chunk of response) {
-          const content = chunk.choices?.[0]?.delta?.content;
-          if (content) {
-            controller.enqueue(encoder.encode(content));
-          }
-        }
-        controller.close();
-      },
-    });
+    // return result.toDataStreamResponse();
+    // const encoder = new TextEncoder();
+    // const stream = new ReadableStream({
+    //   async start(controller) {
+    //     try {
+    //       for await (const chunk of aiStream) {
+    //         // chunk.choices[0].delta.content ichidagi har bir qism
+    //         const text = chunk.choices[0]?.delta?.content;
+    //         if (text) {
+    //           // SSE event: data: {"role":"assistant","content":"…"}\n\n
+    //           const payload = JSON.stringify({
+    //             role: "assistant",
+    //             content: text,
+    //           });
+    //           controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
+    //         }
+    //       }
+    //     } catch (e) {
+    //       controller.error(e);
+    //     } finally {
+    //       controller.close();
+    //     }
+    //   },
+    // });
+    // console.log("Stream:", stream);
+    // return new NextResponse(stream, {
+    //   headers: {
+    //     "Content-Type": "text/event-stream",
+    //     "Cache-Control": "no-cache, no-transform",
+    //     Connection: "keep-alive",
+    //   },
+    // });
 
-    return new NextResponse(stream, {
+    // const reply = response.choices[0]?.message?.content || "No response";
+    // const stream = openaiRes.body as ReadableStream;
+
+    // Javobni foydalanuvchiga qaytarish
+    // console.log("Reply:", reply);
+    // return Response.json({
+    //   role: "assistant",
+    //   id: crypto.randomUUID(),
+    //   content: reply,
+    // });
+    return new NextResponse(JSON.stringify({ reply }), {
       headers: {
-        "Content-Type": "text/plain",
+        "Content-Type": "application/json", // JSON formatida yuborish
       },
     });
+    // return new NextResponse(reply, {
+    //   headers: {
+    //     "Content-Type": "application/json", // JSON formatida yuborish
+    //   },
+    // });
   } catch (e) {
-    console.error("Unhandled Error:", e);
+    console.error("Error:", e);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
