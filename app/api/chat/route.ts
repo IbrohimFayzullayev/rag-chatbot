@@ -64,15 +64,23 @@ export async function POST(req: Request) {
     const systemPrompt = {
       role: "system",
       content: `
-        Siz sun'iy intellektga asoslangan yordamchisiz. Sizning asosiy vazifangiz —
-        foydalanuvchilarga O‘zbekiston haqida aniq va foydali ma’lumotlarni taqdim
-        etish. Quyidagi kontekstda berilgan ma’lumotlardan foydalanib javob bering.
-        Agar savolga kontekstda javob topilmasa, siz mavjud bilimlaringizga asoslanib
-        javob bera olasiz. Har doim javoblaringizni o‘zbek tilida yozing va iloji
-        boricha tushunarli, sodda, va aniq tarzda tushuntiring.
-        Hech qachon “kontekstda bu bor” yoki “kontekstda bu yo‘q” degan jumlalarni
-        ishlatmang. Javoblaringizda havolalar, manbalar yoki rasmga oid kontentni
-        keltirmang. Faqat matn ko‘rinishida izoh bering.
+        You are an AI assistant developed to provide helpful and accurate information specifically about Uzbekistan.
+        Follow all the instructions below carefully and consistently in every response:
+    
+        Rules:
+        1. You must always reply in the **Uzbek language**, using clear, simple, and natural expressions.
+        2. Use **friendly, helpful, and respectful** language in every answer.
+        3. If the user's question can be answered using the given context, do so.
+        4. If the context is not sufficient, use your general knowledge — but never say anything about the context itself.
+        5. **Never mention or reference the context** directly in any way.
+        6. Your answers should **never contain links, images, citations, or markdown** — only plain text.
+        7. Keep the answers **useful, accurate, and easy to understand**, especially for people unfamiliar with the topic.
+        8. Do not repeat the user’s question. Go straight to answering it.
+    
+        Additional behavior:
+        - Act as a professional assistant who specializes in Uzbek culture, geography, economy, travel, history, daily life, and society.
+        - Do not provide speculative or potentially misleading information.
+        - Avoid unnecessary details unless they help clarify the topic.
     
         ----------------------------------------
         KONTEKSTDAGI MA’LUMOTLAR:
@@ -84,71 +92,18 @@ export async function POST(req: Request) {
       `,
     };
 
-    // OpenAI Chat javobini olish
-    // const openaiRes = await openai.chat.completions.create({
-    //   model: "gpt-4",
-    //   stream: true,
-    //   messages: [systemPrompt, ...messages],
-    // });
-    const reply = await openai.chat.completions.create({
+    const response = await openai.chat.completions.create({
       model: "gpt-4",
-      stream: true,
-      messages: [systemPrompt, ...messages],
+      messages: [systemPrompt, ...messages.slice(-5)],
     });
 
-    // return result.toDataStreamResponse();
-    // const encoder = new TextEncoder();
-    // const stream = new ReadableStream({
-    //   async start(controller) {
-    //     try {
-    //       for await (const chunk of aiStream) {
-    //         // chunk.choices[0].delta.content ichidagi har bir qism
-    //         const text = chunk.choices[0]?.delta?.content;
-    //         if (text) {
-    //           // SSE event: data: {"role":"assistant","content":"…"}\n\n
-    //           const payload = JSON.stringify({
-    //             role: "assistant",
-    //             content: text,
-    //           });
-    //           controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
-    //         }
-    //       }
-    //     } catch (e) {
-    //       controller.error(e);
-    //     } finally {
-    //       controller.close();
-    //     }
-    //   },
-    // });
-    // console.log("Stream:", stream);
-    // return new NextResponse(stream, {
-    //   headers: {
-    //     "Content-Type": "text/event-stream",
-    //     "Cache-Control": "no-cache, no-transform",
-    //     Connection: "keep-alive",
-    //   },
-    // });
+    const reply = response.choices[0]?.message?.content || "No response";
 
-    // const reply = response.choices[0]?.message?.content || "No response";
-    // const stream = openaiRes.body as ReadableStream;
-
-    // Javobni foydalanuvchiga qaytarish
-    // console.log("Reply:", reply);
-    // return Response.json({
-    //   role: "assistant",
-    //   id: crypto.randomUUID(),
-    //   content: reply,
-    // });
     return new NextResponse(JSON.stringify({ reply }), {
       headers: {
         "Content-Type": "application/json", // JSON formatida yuborish
       },
     });
-    // return new NextResponse(reply, {
-    //   headers: {
-    //     "Content-Type": "application/json", // JSON formatida yuborish
-    //   },
-    // });
   } catch (e) {
     console.error("Error:", e);
     return new NextResponse("Internal Server Error", { status: 500 });
