@@ -6,12 +6,13 @@ interface PromptSuggestionRowProps {
 
 const PromptSuggestionRow = ({ onPromptClick }: PromptSuggestionRowProps) => {
   const prompts = [
-    "O'zbekiston qayerda joylashgan?",
-    "O'zbekiston poytaxti qayer?",
-    "O'zbekistonning eng katta shahri qaysi?",
-    "O'zbekistonning rasmiy tili qaysi?",
-    "O'zbekistonning eng mashhur taomlari qaysi?",
-    "O'zbekistonning tarixiy joylari qaysi?",
+    "Sen kimsan?",
+    "UzTelecom haqida ma'lumot ber",
+    "UzTelecom xizmatlari haqida ma'lumot ber",
+    "UzTelecom tariflari haqida ma'lumot ber",
+    "UzTelecom tariflariga qanday qilib ulanish mumkin",
+    "UzTelecomda telefon uchun eng arzon tarif reja qaysi",
+    "UzTelecomda internet xizmatlari haqida ma'lumot ber",
   ];
 
   return (

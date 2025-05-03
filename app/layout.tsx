@@ -2,8 +2,8 @@
 import "./index.css";
 
 export const metadata = {
-  title: "UzGpt",
-  description: "Uzbekistan AI Assistant",
+  title: "UzTelecom AI Assistant",
+  description: "UzTelecom AI Assistant",
 };
 
 const RootLayout = ({ children }) => {
@@ -12,7 +12,7 @@ const RootLayout = ({ children }) => {
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>UzGpt</title>
+        <title>UzTelecom AI</title>
       </head>
       <body>{children}</body>
     </html>

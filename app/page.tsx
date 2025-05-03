@@ -70,7 +70,8 @@ const Home = () => {
               Assalomu alaykum!
             </h1>
             <p className="text-gray-600 text-lg">
-              Sizga O‘zbekiston haqida har qanday ma`lumot kerakmi?
+              UzTelecom telefon tariflari va xizmatlari haqida ma`lumot olish
+              uchun
               <br />
               Quyidagi tavsiyalarni bosib ko‘rishingiz mumkin.
             </p>

@@ -25,7 +25,17 @@ new OpenAI({
 
 const openEmbeddings = new openAIEmbeddings();
 
-const f1Data = ["https://uz.wikipedia.org/wiki/O%CA%BBzbekiston?variant=zh-tw"];
+const f1Data = [
+  "https://uztelecom.uz/",
+  "https://uztelecom.uz/uz/jismoniy-shaxslarga/tarif-rejalar#gsm_Mobile",
+  "https://uztelecom.uz/uz/jismoniy-shaxslarga/mobil-aloqa/gsm/tariflar/mobile/mobile-mini",
+  "https://uztelecom.uz/uz/jismoniy-shaxslarga/mobil-aloqa/gsm/tariflar/mobile/mobile-optimal",
+  "https://uztelecom.uz/uz/jismoniy-shaxslarga/mobil-aloqa/gsm/tariflar/mobile/mobile-balance",
+  "https://uztelecom.uz/uz/jismoniy-shaxslarga/mobil-aloqa/gsm/tariflar/mobile/mobile-ideal",
+  "https://uztelecom.uz/uz/jismoniy-shaxslarga/mobil-aloqa/gsm/tariflar/mobile/mobile-lux",
+  "https://uztelecom.uz/uz/jismoniy-shaxslarga/mobil-aloqa/gsm/tariflar/mobile/mobile-elite",
+  "https://uztelecom.uz/uz/jismoniy-shaxslarga/boshqa-tariflar#gsm_Foydali%20tariflar",
+];
 
 const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN);
 const db = client.db(ASTRA_DB_API_ENDPOINT, {
