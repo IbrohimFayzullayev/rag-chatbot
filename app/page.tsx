@@ -4,6 +4,7 @@ import LoadingBubble from "./components/LoadingBubble";
 import Bubble from "./components/Bubble";
 import { SendHorizonal } from "lucide-react";
 import { FormEvent, useState } from "react";
+import { generateUUID } from "./utils/funcs";
 
 const Home = () => {
   const [messages, setMessages] = useState([]);
@@ -17,7 +18,7 @@ const Home = () => {
     setMessages((prev) => [
       ...prev,
       {
-        id: crypto.randomUUID(),
+        id: generateUUID(),
         content: question,
         role: "user",
       },
@@ -31,7 +32,7 @@ const Home = () => {
         body: JSON.stringify({
           messages: [
             ...messages,
-            { role: "user", content: question, id: crypto.randomUUID() },
+            { role: "user", content: question, id: generateUUID() },
           ],
         }),
       })
@@ -40,7 +41,7 @@ const Home = () => {
           setMessages((prev) => [
             ...prev,
             {
-              id: crypto.randomUUID(),
+              id: generateUUID(),
               content: data.reply,
               role: "assistant",
             },
