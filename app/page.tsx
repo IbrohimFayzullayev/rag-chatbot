@@ -72,9 +72,10 @@ const Home = () => {
             </h1>
             <p className="text-gray-600 text-lg">
               UzTelecom telefon tariflari va xizmatlari haqida ma`lumot olish
-              uchun
+              uchun quyidagi tavsiyalardan
               <br />
-              Quyidagi tavsiyalarni bosib ko‘rishingiz mumkin.
+              birini tanlashingiz yoki pastdagi formaga savolingizni yozib
+              yuborishingiz mumkin.
             </p>
             <div className="mt-6">
               <PromptSuggestionRow onPromptClick={onPromptClick} />

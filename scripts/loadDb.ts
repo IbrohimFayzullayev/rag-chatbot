@@ -2,14 +2,12 @@ import { DataAPIClient } from "@datastax/astra-db-ts";
 import { PuppeteerWebBaseLoader } from "@langchain/community/document_loaders/web/puppeteer";
 import { OpenAI } from "@langchain/openai";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-//import { OpenAIEmbeddings } from "@langchain/openai";
 import { OpenAI as openAIEmbeddings } from "openai";
 
 import "dotenv/config";
 
 type SimilarityMetric = "dot_product" | "cosine" | "euclidean";
 
-// fetching all the env variables
 const {
   OPENAI_API_KEY,
   ASTRA_DB_NAMESPACE,
@@ -25,7 +23,7 @@ new OpenAI({
 
 const openEmbeddings = new openAIEmbeddings();
 
-const f1Data = [
+const UzTelecomData = [
   "https://uztelecom.uz/",
   "https://uztelecom.uz/uz/jismoniy-shaxslarga/tarif-rejalar#gsm_Mobile",
   "https://uztelecom.uz/uz/jismoniy-shaxslarga/mobil-aloqa/gsm/tariflar/mobile/mobile-mini",
@@ -62,7 +60,7 @@ const createCollection = async (
 const loadSampleData = async () => {
   const collection = db.collection(ASTRA_DB_COLLECTION);
 
-  for await (const url of f1Data) {
+  for await (const url of UzTelecomData) {
     const content = await scrapePage(url);
     const chunks = await splitter.splitText(content);
     for await (const chunk of chunks) {

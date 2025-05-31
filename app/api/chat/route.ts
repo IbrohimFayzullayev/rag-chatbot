@@ -13,12 +13,9 @@ const {
   ASTRA_DB_APPLICATION_TOKEN,
 } = process.env;
 
-// Langchain uchun OpenAI
 new LangchainOpenAI({
   apiKey: OPENAI_API_KEY,
 });
-
-// Embedding va Chat uchun OpenAI SDK
 
 const openai = new OpenAIEmbeddings({
   apiKey: OPENAI_API_KEY,
@@ -37,14 +34,12 @@ export async function POST(req: Request) {
 
     let docContext = "";
 
-    // Embedding yaratish
     const embedding = await openai.embeddings.create({
       model: "text-embedding-3-small",
       input: latestMessage,
       encoding_format: "float",
     });
 
-    // Astra DB'dan hujjatlarni olish
     try {
       const collection = db.collection(ASTRA_DB_COLLECTION!);
       const cursor = collection.find(null, {
@@ -101,7 +96,7 @@ export async function POST(req: Request) {
 
     return new NextResponse(JSON.stringify({ reply }), {
       headers: {
-        "Content-Type": "application/json", // JSON formatida yuborish
+        "Content-Type": "application/json",
       },
     });
   } catch (e) {
