@@ -2,9 +2,10 @@ import { OpenAI as LangchainOpenAI } from "@langchain/openai";
 import { OpenAI as OpenAIEmbeddings } from "openai";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 import { NextResponse } from "next/server";
+// import { OpenAI } from "openai";
 
 export const runtime = "edge";
-
+// env
 const {
   OPENAI_API_KEY,
   ASTRA_DB_NAMESPACE,
