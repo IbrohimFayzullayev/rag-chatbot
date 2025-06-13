@@ -3,8 +3,8 @@ import { OpenAI as OpenAIEmbeddings } from "openai";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 import { NextResponse } from "next/server";
 
-// export const runtime = "edge";
-// env
+export const runtime = "nodejs";
+
 const {
   OPENAI_API_KEY,
   ASTRA_DB_NAMESPACE,
@@ -52,8 +52,12 @@ export async function POST(req: Request) {
       const documents = await cursor.toArray();
       const docsMap = documents.map((doc) => doc.text);
       docContext = JSON.stringify(docsMap);
+      // if (!docContext) {
+      //   docContext =
+      //     "Kontekstdan ma'lumot topilmadi, umumiy bilim asosida javob beriladi.";
+      // }
     } catch (error) {
-      console.error("DB Error:", error);
+      console.error("❌ ASTRA DB ERROR ❌", JSON.stringify(error, null, 2));
     }
 
     const systemPrompt = {
